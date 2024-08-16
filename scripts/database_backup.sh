@@ -35,6 +35,12 @@ fi
 backup_normal() {
   log "Starting backup in normal mode..."
 
+  # Check which pg_dump command is available
+  VER = which pg_dump 
+
+
+  echo "pg_dump version: $VER"
+
   # Perform the database backup using pg_dump
   sudo -u $DATABASE_ADMIN "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE" || handle_error
 
