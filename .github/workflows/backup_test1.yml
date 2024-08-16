@@ -46,7 +46,7 @@ jobs:
         mkdir -p $OUTPUT_DIRECTORY
         
         # Set the appropriate permissions
-        chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
+        sudo chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
         
         # Perform the database backup using pg_dump
         sudo -u $DATABASE_ADMIN -c "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE"
