@@ -12,7 +12,7 @@ jobs:
     env:
       OUTPUT_DIRECTORY: /OMERO/backup/database
       DATABASE: omero_database
-      DATABASE_ADMIN: postgres
+      DATABASE_ADMIN: postgres1ß
       CONTAINER_NAME: postgres_container
       DATE: $(date '+%Y-%m-%d')
 
@@ -31,11 +31,11 @@ jobs:
       - name: Set up database and user
         run: |
           cd /tmp
-          # check if database exists and run the following commands if it does not
-          sudo -u postgres psql -c "DROP DATABASE IF EXISTS $DATABASE;"
-          sudo -u postgres psql -c "DROP USER IF EXISTS $DATABASE_ADMIN;"
           sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
           sudo -u postgres psql -c "CREATE USER $DATABASE_ADMIN WITH SUPERUSER;"
+        env:
+          DATABASE: ${{ env.DATABASE }}
+          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
 
 
       - name: Run backup script in normal mode
