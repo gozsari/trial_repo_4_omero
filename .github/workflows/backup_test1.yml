@@ -24,7 +24,7 @@ jobs:
 
     - name: Create PostgreSQL user and database
       run: |
-        sudo -u postgres psql -c "CREATE USER postgres WITH SUPERUSER;"
+        sudo -u postgres psql -c "CREATE USER postgres1 WITH SUPERUSER;"
         sudo -u postgres psql -c "CREATE DATABASE omero_database;"
 
     - name: Create backup directory
@@ -35,11 +35,12 @@ jobs:
 
     - name: Run the backup script
       run: |
+        cd /tmp
         #!/bin/bash
         DATE=`date '+%Y-%m-%d_%H:%M:%S-%Z'`
-        OUTPUT_DIRECTORY=/OMERO/backup/database
+        OUTPUT_DIRECTORY=/tmp/OMERO/backup/database
         DATABASE="omero_database"
-        DATABASE_ADMIN="postgres"
+        DATABASE_ADMIN="postgres1"
         
         # Create the backup directory if it doesn't exist
         mkdir -p $OUTPUT_DIRECTORY
