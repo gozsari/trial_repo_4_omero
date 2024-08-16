@@ -53,7 +53,7 @@ jobs:
         run: |
           mkdir -p $OUTPUT_DIRECTORY
           chmod +x ./scripts/database_backup.sh
-          ./scripts/database_backup.sh
+          sudo -u ./scripts/database_backup.sh
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
           DATABASE: ${{ env.DATABASE }}
