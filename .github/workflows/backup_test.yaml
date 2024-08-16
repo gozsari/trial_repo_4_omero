@@ -31,6 +31,9 @@ jobs:
       - name: Set up database and user
         run: |
           cd /tmp
+          # check if database exists and run the following commands if it does not
+          sudo -u postgres psql -c "DROP DATABASE IF EXISTS $DATABASE;"
+          sudo -u postgres psql -c "DROP USER IF EXISTS $DATABASE_ADMIN;"
           sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
           sudo -u postgres psql -c "CREATE USER $DATABASE_ADMIN WITH SUPERUSER;"
 
