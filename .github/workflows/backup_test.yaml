@@ -39,6 +39,7 @@ jobs:
 
       - name: Verify database existence
         run: |
+          cd /tmp
           DB_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$DATABASE'")
           if [ "$DB_EXISTS" != "1" ]; then
             echo "Database $DATABASE does not exist. Exiting."
