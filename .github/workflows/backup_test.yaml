@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      OUTPUT_DIRECTORY: /OMERO/backup/database
+      OUTPUT_DIRECTORY: /tmp/OMERO/backup/database
       DATABASE: omero_database
       DATABASE_ADMIN: postgres1ß
       CONTAINER_NAME: postgres_container
