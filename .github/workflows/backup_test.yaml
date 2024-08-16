@@ -37,7 +37,16 @@ jobs:
           DATABASE: ${{ env.DATABASE }}
           DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
 
-
+      - name: Verify database existence
+        run: |
+          DB_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$DATABASE'")
+          if [ "$DB_EXISTS" != "1" ]; then
+            echo "Database $DATABASE does not exist. Exiting."
+            exit 1
+          fi
+        env:
+          DATABASE: omero_database
+        
       - name: Run backup script in normal mode
         run: |
           mkdir -p $OUTPUT_DIRECTORY
