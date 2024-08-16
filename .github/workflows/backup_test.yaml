@@ -48,10 +48,18 @@ jobs:
           fi
         env:
           DATABASE: omero_database
+      
+      - name: Check if pg_dump is installed
+        run: |
+          if ! command -v pg_dump &> /dev/null
+          then
+              echo "pg_dump could not be found"
+              exit 1
+          fi
         
       - name: Run backup script in normal mode
         run: |
-          mkdir -p $OUTPUT_DIRECTORY
+          
           chmod +x ./scripts/database_backup.sh
           ./scripts/database_backup.sh
         env:
