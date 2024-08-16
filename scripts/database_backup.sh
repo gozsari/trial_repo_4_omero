@@ -6,6 +6,13 @@
 # Date format
 DATE=$(date '+%Y-%m-%d')
 
+# echo environment variables
+echo "OUTPUT_DIRECTORY: $OUTPUT_DIRECTORY"
+echo "DATABASE: $DATABASE"
+echo "DATABASE_ADMIN: $DATABASE_ADMIN"
+echo "CONTAINER_NAME: $CONTAINER_NAME"
+echo "DATE: $DATE"
+
 # Log file
 LOG_FILE="$OUTPUT_DIRECTORY/backup_log.txt"
 
