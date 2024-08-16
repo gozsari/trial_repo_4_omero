@@ -35,7 +35,7 @@ jobs:
       run: sudo chown -R postgres /tmp/OMERO/backup/database
 
     - name: Run the backup script
-      run: sudo -u postgres -c "pg_dump -Fc -f /tmp/OMERO/backup/database/omero_database.0816.pg_dump omero_database"
+      run: su -u postgres -c "pg_dump -Fc -f /tmp/OMERO/backup/database/omero_database.0816.pg_dump omero_database"
 
 
     - name: Verify backup
