@@ -41,7 +41,6 @@ jobs:
       - name: Run backup script in normal mode
         run: |
           mkdir -p $OUTPUT_DIRECTORY
-          chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
           chmod +x ./scripts/database_backup.sh
           ./scripts/database_backup.sh
         env:
