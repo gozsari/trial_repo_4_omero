@@ -3,7 +3,7 @@ name: Test Database Backup Script
 on:
   push:
     branches:
-      - main
+      - main   
 
 jobs:
   backup:

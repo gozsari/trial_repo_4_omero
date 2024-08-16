@@ -6,6 +6,8 @@ source .env
 # Date format
 DATE=$(date '+%Y-%m-%d')
 
+
+# Output directory
 # Log file
 LOG_FILE="$OUTPUT_DIRECTORY/backup_log.txt"
 
