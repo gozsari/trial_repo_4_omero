@@ -36,7 +36,7 @@ backup_normal() {
   log "Starting backup in normal mode..."
 
   # Perform the database backup using pg_dump
-  pg_dump -U $DATABASE_ADMIN  -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE || handle_error
+  sudo -c "pg_dump -U $DATABASE_ADMIN  -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE" || handle_error
 
   log "Backup in normal mode completed successfully."
 }
