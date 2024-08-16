@@ -32,7 +32,7 @@ jobs:
       run: sudo mkdir -p /tmp/OMERO/backup/database
 
     - name: Set permissions for backup directory
-      run: sudo chown -R postgres /OMERO/backup/database
+      run: sudo chown -R postgres /tmp/OMERO/backup/database
 
     - name: Run the backup script
       run: |
@@ -43,14 +43,10 @@ jobs:
         DATABASE="omero_database"
         DATABASE_ADMIN="postgres"
         
-        # Create the backup directory if it doesn't exist
-        mkdir -p $OUTPUT_DIRECTORY
-        
-        # Set the appropriate permissions
-        sudo chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
+
         
         # Perform the database backup using pg_dump
         sudo -u $DATABASE_ADMIN -c "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE"
 
     - name: Verify backup
-      run: ls /OMERO/backup/database/*.pg_dump
+      run: ls /tmp/OMERO/backup/database/*.pg_dump
