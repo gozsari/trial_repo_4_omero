@@ -28,16 +28,11 @@ jobs:
       - name: Start PostgreSQL service
         run: sudo service postgresql start
     
-      - name: Create Database if it does not exist
+      - name: Set up database and user
         run: |
-            DB_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$DATABASE'")
-            if [ "$DB_EXISTS" != "1" ]; then
-            sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
-            fi
-
-      - name: Set up user if it does not exist
-        run: |
-          sudo -u postgres psql -c "DO $$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$DATABASE_ADMIN') THEN CREATE ROLE $DATABASE_ADMIN WITH SUPERUSER; END IF; END $$;"
+          cd /tmp
+          sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
+          sudo -u postgres psql -c "CREATE USER $DATABASE_ADMIN WITH SUPERUSER;"
 
 
       - name: Run backup script in normal mode
