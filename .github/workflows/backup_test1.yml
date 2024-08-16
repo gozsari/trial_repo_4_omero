@@ -24,8 +24,8 @@ jobs:
 
     - name: Create PostgreSQL user and database
       run: |
-        sudo -u postgres psql -c "CREATE USER postgres1 WITH SUPERUSER;"
-        sudo -u postgres psql -c "CREATE DATABASE omero_database;"
+        sudo -u postgres1 psql -c "CREATE USER postgres1 WITH SUPERUSER;"
+        sudo -u postgres1 psql -c "CREATE DATABASE omero_database;"
 
     - name: Create backup directory
       run: sudo mkdir -p /OMERO/backup/database
