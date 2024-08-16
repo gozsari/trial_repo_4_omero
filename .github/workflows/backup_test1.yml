@@ -24,11 +24,12 @@ jobs:
 
     - name: Create PostgreSQL user and database
       run: |
+        cd /tmp
         
         sudo -u postgres psql -c "CREATE DATABASE omero_database;"
 
     - name: Create backup directory
-      run: sudo mkdir -p /OMERO/backup/database
+      run: sudo mkdir -p /tmp/OMERO/backup/database
 
     - name: Set permissions for backup directory
       run: sudo chown -R postgres /OMERO/backup/database
