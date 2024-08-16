@@ -35,18 +35,8 @@ jobs:
       run: sudo chown -R postgres /tmp/OMERO/backup/database
 
     - name: Run the backup script
-      run: |
-        cd /tmp
-        #!/bin/bash
-        DATE=`date '+%Y-%m-%d_%H:%M:%S-%Z'`
-        OUTPUT_DIRECTORY=/tmp/OMERO/backup/database
-        DATABASE="omero_database"
-        DATABASE_ADMIN="postgres"
-        
+      run: sudo -u postgres -c "pg_dump -Fc -f /tmp/OMERO/backup/database/omero_database.0816.pg_dump omero_database"
 
-        
-        # Perform the database backup using pg_dump
-        sudo -u $DATABASE_ADMIN -c "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE"
 
     - name: Verify backup
       run: ls /tmp/OMERO/backup/database/*.pg_dump
