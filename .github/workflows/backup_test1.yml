@@ -24,8 +24,8 @@ jobs:
 
     - name: Create PostgreSQL user and database
       run: |
-        sudo -u postgres1 psql -c "CREATE USER postgres1 WITH SUPERUSER;"
-        sudo -u postgres1 psql -c "CREATE DATABASE omero_database;"
+        
+        sudo -u postgres psql -c "CREATE DATABASE omero_database;"
 
     - name: Create backup directory
       run: sudo mkdir -p /OMERO/backup/database
@@ -40,7 +40,7 @@ jobs:
         DATE=`date '+%Y-%m-%d_%H:%M:%S-%Z'`
         OUTPUT_DIRECTORY=/tmp/OMERO/backup/database
         DATABASE="omero_database"
-        DATABASE_ADMIN="postgres1"
+        DATABASE_ADMIN="postgres"
         
         # Create the backup directory if it doesn't exist
         mkdir -p $OUTPUT_DIRECTORY
@@ -49,7 +49,7 @@ jobs:
         chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
         
         # Perform the database backup using pg_dump
-        su $DATABASE_ADMIN -c "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE"
+        sudo -u $DATABASE_ADMIN -c "pg_dump -Fc -f $OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump $DATABASE"
 
     - name: Verify backup
       run: ls /OMERO/backup/database/*.pg_dump
