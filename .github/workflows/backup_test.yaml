@@ -75,6 +75,11 @@ jobs:
         run: |
           docker run -d --name $CONTAINER_NAME -e POSTGRES_DB=$DATABASE -e POSTGRES_USER=$DATABASE_ADMIN -e POSTGRES_PASSWORD=password -p 5433:5432 postgres:latest
           sleep 20 # Wait for the container to be ready
+      
+      - name: Print our current directory and list files
+        run: |
+          pwd
+          ls
 
       - name: Run backup script in Docker mode
         run: |
