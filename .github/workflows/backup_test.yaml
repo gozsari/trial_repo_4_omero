@@ -58,7 +58,7 @@ jobs:
         
       - name: Run backup script in normal mode
         run: |
-          
+          cd /tmp 
           chmod +x scripts/database_backup.sh
           ./scripts/database_backup.sh
         env:
