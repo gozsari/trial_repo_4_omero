@@ -60,7 +60,7 @@ jobs:
         run: |
           
           chmod +x scripts/database_backup.sh
-          ./scripts/database_backup.sh
+          scripts/database_backup.sh
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
           DATABASE: ${{ env.DATABASE }}
@@ -76,7 +76,9 @@ jobs:
           sleep 20 # Wait for the container to be ready
 
       - name: Run backup script in Docker mode
-        run: ./scripts/database_backup.sh docker
+        run:
+          chmod +x /scripts/database_backup.sh 
+          scripts/database_backup.sh docker
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
           DATABASE: ${{ env.DATABASE }}
