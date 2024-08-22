@@ -58,8 +58,8 @@ jobs:
         
       - name: Run backup script in normal mode
         run: |
-          sudo mv scripts/database_backup.sh /tmp/database_backup.sh
-          sudo mv scripts/.env /tmp/.env
+          sudo cp scripts/database_backup.sh /tmp/database_backup.sh
+          sudo cp scripts/.env /tmp/.env
           cd /tmp
           sudo chmod +x database_backup.sh
           sudo ./database_backup.sh
@@ -83,8 +83,8 @@ jobs:
 
       - name: Run backup script in Docker mode
         run: |
-          sudo chmod +x scripts/database_backup.sh
-          sudo ./scripts/database_backup.sh docker
+          cd /tmp
+          sudo database_backup.sh docker
 
       - name: Clean up Docker container
         run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
