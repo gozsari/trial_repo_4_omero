@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-#source .env
+source .env
 
 # Date format
 DATE=$(date '+%Y-%m-%d')
