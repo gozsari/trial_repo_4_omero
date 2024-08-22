@@ -40,7 +40,7 @@ backup_normal() {
   log "Starting backup in normal mode..."
 
   # Check which pg_dump command is available
-  VER = which pg_dump 
+  VER= $(which pg_dump)
 
 
   echo "pg_dump version: $VER"
