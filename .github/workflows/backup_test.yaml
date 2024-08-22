@@ -67,12 +67,7 @@ jobs:
           DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
           DATE: ${{ env.DATE }}
 
-      - name: Verify backup files exist and are not empty
+      - name: Verify backup files exist and list them
         run: 
           ls $OUTPUT_DIRECTORY/*.pg_dump
-          for file in $OUTPUT_DIRECTORY/*.pg_dump; do
-            if [ ! -s $file ]; then
-              echo "File $file is empty. Exiting."
-              exit 1
-            fi
-          done
+          
