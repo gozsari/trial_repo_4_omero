@@ -72,7 +72,7 @@ backup_docker() {
 mkdir -p $OUTPUT_DIRECTORY
 
 # Set the appropriate permissions
-#chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
+chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
 
 # Check if a parameter was passed to the script for Docker mode
 if [ "$1" == "docker" ]; then
