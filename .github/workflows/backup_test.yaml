@@ -58,9 +58,11 @@ jobs:
         
       - name: Run backup script in normal mode
         run: |
-          
-          sudo chmod +x scripts/database_backup.sh
-          sudo ./scripts/database_backup.sh
+          cd /tmp
+          mv scripts/database_backup.sh tmp_script.sh
+          mv scripts/.env .env
+          sudo chmod +x tmp_script.sh
+          sudo ./tmp_script.sh
 
       - name: Verify backup files exist and list them
         run: 
