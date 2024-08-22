@@ -88,8 +88,6 @@ jobs:
           cd /tmp
           sudo chmod +x database_backup.sh
           sudo ./database_backup.sh docker
-          
-          sudo database_backup.sh docker
 
       - name: Clean up Docker container
         run: docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
