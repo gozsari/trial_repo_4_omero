@@ -82,7 +82,4 @@ else
   backup_normal
 fi
 
-# Clean up old backups (older than 7 days)
-#find $OUTPUT_DIRECTORY -type f -name "*.pg_dump" -mtime +7 -exec rm {} \;
-
 log "Backup script completed."
