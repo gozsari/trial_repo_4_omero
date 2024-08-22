@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-if [ ! -f scripts/.env ]; then
+if [ ! -f /tmp/.env ]; then
     echo ".env file not found! Please create one with the necessary variables."
     exit 1
 fi
-source scripts/.env
+source /tmp/.env
 
 # Date format
 DATE=$(date '+%Y-%m-%d')
