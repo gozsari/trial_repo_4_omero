@@ -61,11 +61,6 @@ jobs:
           
           sudo chmod +x scripts/database_backup.sh
           sudo ./scripts/database_backup.sh
-        env:
-          OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
-          DATABASE: ${{ env.DATABASE }}
-          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
-          DATE: ${{ env.DATE }}
 
       - name: Verify backup files exist and list them
         run: 
