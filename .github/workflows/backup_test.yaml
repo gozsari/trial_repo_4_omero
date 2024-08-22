@@ -1,7 +1,7 @@
 name: Test Database Backup Script
 
 on:
-  pull_request:
+  push:
     branches:
       - main   
 
@@ -32,7 +32,6 @@ jobs:
         run: |
           cd /tmp
           sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
-
         env:
           DATABASE: ${{ env.DATABASE }}
           DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
