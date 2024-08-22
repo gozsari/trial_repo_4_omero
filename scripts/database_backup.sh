@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # Load environment variables from .env file
+if [ ! -f .env ]; then
+    echo ".env file not found! Please create one with the necessary variables."
+    exit 1
+fi
 source .env
 
 # Date format
