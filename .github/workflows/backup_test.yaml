@@ -60,7 +60,7 @@ jobs:
         run: |
           
           chmod +x scripts/database_backup.sh
-          scripts/database_backup.sh
+          ./scripts/database_backup.sh
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
           DATABASE: ${{ env.DATABASE }}
@@ -77,8 +77,8 @@ jobs:
 
       - name: Run backup script in Docker mode
         run:
-          chmod +x /scripts/database_backup.sh 
-          scripts/database_backup.sh docker
+          chmod +x scripts/database_backup.sh 
+          ./scripts/database_backup.sh docker
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
           DATABASE: ${{ env.DATABASE }}
