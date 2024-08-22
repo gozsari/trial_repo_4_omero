@@ -77,7 +77,7 @@ jobs:
           sleep 20 # Wait for the container to be ready
 
       - name: Run backup script in Docker mode
-        run:
+        run: |
           sudo chmod +x scripts/database_backup.sh
           sudo ./scripts/database_backup.sh docker
 
