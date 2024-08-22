@@ -73,7 +73,7 @@ jobs:
 
       - name: Set up Docker container for PostgreSQL
         run: |
-          docker run -d --name $CONTAINER_NAME -e POSTGRES_DB=$DATABASE -e POSTGRES_USER=$DATABASE_ADMIN -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:latest
+          docker run -d --name $CONTAINER_NAME -e POSTGRES_DB=$DATABASE -e POSTGRES_USER=$DATABASE_ADMIN -e POSTGRES_PASSWORD=password -p 5433:5432 postgres:latest
           sleep 20 # Wait for the container to be ready
 
       - name: Run backup script in Docker mode
