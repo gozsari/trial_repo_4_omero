@@ -59,7 +59,7 @@ jobs:
       - name: Run backup script in normal mode
         run: |
           
-          chmod +x ./scripts/database_backup.sh
+          chmod +x scripts/database_backup.sh
           ./scripts/database_backup.sh
         env:
           OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
