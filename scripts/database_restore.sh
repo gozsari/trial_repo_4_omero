@@ -9,6 +9,8 @@ if [ ! -f /tmp/.env ]; then
 fi
 
 source /tmp/.env
+# Log file
+LOG_FILE="$OUTPUT_DIRECTORY/backup_log.txt"
 
 BACKUP_FILE=""
 
@@ -33,6 +35,9 @@ else
     fi
 fi
 
+log() {
+  echo "$DATE - $1" >> $LOG_FILE
+}
 
 handle_error() {
   log "An error occurred during the restore process. Exiting."
