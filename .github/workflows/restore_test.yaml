@@ -1,0 +1,73 @@
+name: Test Database Restore Script
+
+on:
+  push:
+    branches:
+      - main   
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+
+    env:
+      OUTPUT_DIRECTORY: /tmp/OMERO/backup/database
+      DATABASE: omero_database
+      DATABASE_ADMIN: postgres
+      CONTAINER_NAME: postgres_container
+      DATE: $(date '+%Y-%m-%d')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+
+      - name: Start PostgreSQL service
+        run: sudo service postgresql start
+
+      - name: Set up database and user
+        run: |
+          cd /tmp
+          sudo -u postgres psql -c "CREATE DATABASE $DATABASE;"
+        env:
+          DATABASE: ${{ env.DATABASE }}
+          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
+
+      - name: Run backup script to create backup file
+        run: |
+          sudo cp scripts/database_backup.sh /tmp/database_backup.sh
+          sudo cp scripts/.env /tmp/.env
+          cd /tmp
+          sudo chmod +x database_backup.sh
+          sudo ./database_backup.sh
+        env:
+          OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
+          DATABASE: ${{ env.DATABASE }}
+          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
+
+      - name: Verify backup files exist and list them
+        run: |
+          ls $OUTPUT_DIRECTORY/*.pg_dump || exit 1
+        env:
+          OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
+
+      - name: Restore database from the latest backup
+        run: |
+          sudo cp scripts/database_restore.sh /tmp/database_restore.sh
+          sudo cp scripts/.env /tmp/.env
+          cd /tmp
+          sudo chmod +x database_restore.sh
+          sudo ./database_restore.sh
+        env:
+          OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
+          DATABASE: ${{ env.DATABASE }}
+          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
+
+      - name: Verify database restore
+        run: |
+          sudo -u postgres psql -c "\l" | grep $DATABASE
+        env:
+          DATABASE: ${{ env.DATABASE }}
