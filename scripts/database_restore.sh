@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 # this script will restore a database from a backup file
 
 # Example: ./database_restore.sh 2024-08-01
@@ -7,9 +7,11 @@ if [ ! -f /tmp/.env ]; then
     echo ".env file not found! Please create one with the necessary variables."
     exit 1
 fi
+
 source /tmp/.env
 
 BACKUP_FILE=""
+
 # if the date is not provided as an argument, then find the latest backup file
 echo "OUTPUT_DIRECTORY: $OUTPUT_DIRECTORY"
 echo "DATABASE: $DATABASE"
