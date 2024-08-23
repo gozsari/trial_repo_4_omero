@@ -13,8 +13,7 @@ jobs:
       OUTPUT_DIRECTORY: /tmp/OMERO/backup/database
       DATABASE: omero_database
       DATABASE_ADMIN: postgres
-      CONTAINER_NAME: postgres_container
-      DATE: $(date '+%Y-%m-%d')
+      CONTAINER_NAME: postgres_container 
 
     steps:
       - name: Checkout repository
