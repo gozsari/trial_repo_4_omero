@@ -1,0 +1,31 @@
+---
+- name: Backup Database Playbook
+  hosts: dbservers  # Target group (adjust as per your inventory)
+  become: yes  # Ensure we have root privileges
+  tasks:
+    - name: Copy database backup script to the server
+      copy:
+        src: files/database_backup.sh
+        dest: /usr/local/bin/database_backup.sh
+        mode: '0755'
+      tags: backup_script
+
+    - name: Execute database backup script
+      command: /usr/local/bin/database_backup.sh
+      register: backup_output
+      ignore_errors: yes  # Continue even if there are errors
+      tags: backup_execute
+
+    - name: Check if backup was successful
+      debug:
+        msg: "{{ backup_output.stdout }}"
+      when: backup_output.rc == 0
+      tags: backup_check
+
+  handlers:
+    - name: Restart DB Service after backup (if needed)
+      service:
+        name: your_database_service  # Replace with actual service name
+        state: restarted
+      when: backup_output.rc == 0
+      tags: restart_service

@@ -28,26 +28,43 @@ handle_error() {
   log "An error occurred during the restore process. Exiting."
   exit 1
 }
+
+find_backup_file() {
+    BACKUP_FILE=""
+
+    # check if it is in docker mode and date is provided
+    if [ "$1" == "docker" ] && [ ! -z "$2" ]; then
+        BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$2.pg_dump"
+    else
+        # if docker mode but no date is provided
+        if [ "$1" == "docker" ]; then
+            echo "No date provided. Looking for the latest backup file..."
+            BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+        else
+            # Find the latest backup file if no date is provided
+            if [ -z "$1" ]; then
+                echo "No date provided. Looking for the latest backup file..."
+                BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+            else
+                BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump"
+            fi
+        fi
+    fi
+
+    # Return the BACKUP_FILE
+    echo "$BACKUP_FILE"
+}
+
  
 restore_normal() {
     log "Starting database restore in normal mode..."
 
-    BACKUP_FILE=""
+    # Find the backup file
     if [ -z "$1" ]; then
-        echo "Looking for the latest backup file..."
-        BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
-        if [ -z "$BACKUP_FILE" ]; then
-            echo "No backup file found!"
-        else
-            echo "Found backup file: $BACKUP_FILE"
-        fi
+        echo "No date provided. Looking for the latest backup file..."
+        BACKUP_FILE= $(find_backup_file)
     else
-        BACKUP_FILE=$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump
-        if [ ! -f "$BACKUP_FILE" ]; then
-            echo "Backup file $BACKUP_FILE not found!"
-        else
-            echo "Using specified backup file: $BACKUP_FILE"
-        fi
+        BACKUP_FILE=$(find_backup_file "$1")
     fi
 
     # Perform the database restore using pg_restore
@@ -66,26 +83,14 @@ restore_docker() {
     exit 1
     fi
 
-    # Find the backup file 
-    BACKUP_FILE=""
-    # if date is not provided as a second argument, then find the latest backup file
+    # Find the backup file
     if [ -z "$2" ]; then
-        echo "Looking for the latest backup file..."
-        BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
-        if [ -z "$BACKUP_FILE" ]; then
-            echo "No backup file found!"
-        else
-            echo "Found backup file: $BACKUP_FILE"
-        fi
+        echo "No date provided. Looking for the latest backup file..."
+        BACKUP_FILE=$(find_backup_file "docker")
     else
-        BACKUP_FILE=/tmp/$DATABASE.$2.pg_dump
-        if ! docker exec $CONTAINER_NAME test -f $BACKUP_FILE; then
-            echo "Backup file $BACKUP_FILE not found!"
-        else
-            echo "Using specified backup file: $BACKUP_FILE"
-        fi
+        echo "Using backup file for date: $2"
+        BACKUP_FILE=$(find_backup_file "docker" "$2")
     fi
-
 
     # Copy the backup file from the host machine to the Docker container
     docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
