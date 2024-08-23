@@ -59,50 +59,50 @@ restore_normal() {
 
 
 restore_docker() {
-  log "Starting restore in Docker mode..."
+    log "Starting restore in Docker mode..."
 
-  if ! docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" | grep $CONTAINER_NAME; then
+    if ! docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" | grep $CONTAINER_NAME; then
     log "Container $CONTAINER_NAME is not running. Exiting."
     exit 1
-  fi
-  
-  # Find the backup file 
-  BACKUP_FILE=""
-  # if date is not provided as a second argument, then find the latest backup file
+    fi
+
+    # Find the backup file 
+    BACKUP_FILE=""
+    # if date is not provided as a second argument, then find the latest backup file
     if [ -z "$2" ]; then
         echo "Looking for the latest backup file..."
-        BACKUP_FILE=$(docker exec $CONTAINER_NAME ls -t /tmp/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+        BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
         if [ -z "$BACKUP_FILE" ]; then
-        echo "No backup file found!"
+            echo "No backup file found!"
         else
-        echo "Found backup file: $BACKUP_FILE"
+            echo "Found backup file: $BACKUP_FILE"
         fi
     else
         BACKUP_FILE=/tmp/$DATABASE.$2.pg_dump
         if ! docker exec $CONTAINER_NAME test -f $BACKUP_FILE; then
-        echo "Backup file $BACKUP_FILE not found!"
+            echo "Backup file $BACKUP_FILE not found!"
         else
-        echo "Using specified backup file: $BACKUP_FILE"
+            echo "Using specified backup file: $BACKUP_FILE"
         fi
     fi
 
 
-  # Copy the backup file from the host machine to the Docker container
-  docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
+    # Copy the backup file from the host machine to the Docker container
+    docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
 
-  # Drop the existing database (optional, depending on your restore strategy)
-  docker exec $CONTAINER_NAME psql -U $DATABASE_ADMIN -c "DROP DATABASE IF EXISTS $DATABASE;" || handle_error
+    # Drop the existing database (optional, depending on your restore strategy)
+    docker exec $CONTAINER_NAME psql -U $DATABASE_ADMIN -c "DROP DATABASE IF EXISTS $DATABASE;" || handle_error
 
-  # Create a new empty database
-  docker exec $CONTAINER_NAME psql -U $DATABASE_ADMIN -c "CREATE DATABASE $DATABASE;" || handle_error
+    # Create a new empty database
+    docker exec $CONTAINER_NAME psql -U $DATABASE_ADMIN -c "CREATE DATABASE $DATABASE;" || handle_error
 
-  # Restore the database using pg_restore
-  docker exec $CONTAINER_NAME pg_restore -U $DATABASE_ADMIN -d $DATABASE -Fc /tmp/$(basename $BACKUP_FILE) || handle_error
+    # Restore the database using pg_restore
+    docker exec $CONTAINER_NAME pg_restore -U $DATABASE_ADMIN -d $DATABASE -Fc /tmp/$(basename $BACKUP_FILE) || handle_error
 
-  # Clean up the backup file inside the container
-  docker exec $CONTAINER_NAME rm /tmp/$(basename $BACKUP_FILE) || handle_error
+    # Clean up the backup file inside the container
+    docker exec $CONTAINER_NAME rm /tmp/$(basename $BACKUP_FILE) || handle_error
 
-  log "Restore in Docker mode completed successfully."
+    log "Restore in Docker mode completed successfully."
 }
 
 
