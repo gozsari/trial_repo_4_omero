@@ -32,22 +32,25 @@ handle_error() {
 find_backup_file() {
     BACKUP_FILE=""
 
-    # check if it is in docker mode and date is provided
-    if [ "$1" == "docker" ] && [ ! -z "$2" ]; then
-        BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$2.pg_dump"
+    # Check if in docker mode
+    if [ "$1" == "docker" ]; then
+        if [ -n "$2" ]; then
+            # Docker mode with date provided
+            BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$2.pg_dump"
+        else
+            # Docker mode without date, find the latest backup file
+            echo "No date provided. Looking for the latest backup file..."
+            BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+        fi
     else
-        # if docker mode but no date is provided
-        if [ "$1" == "docker" ]; then
+        # Non-docker mode
+        if [ -z "$1" ]; then
+            # No date provided, find the latest backup file
             echo "No date provided. Looking for the latest backup file..."
             BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
         else
-            # Find the latest backup file if no date is provided
-            if [ -z "$1" ]; then
-                echo "No date provided. Looking for the latest backup file..."
-                BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
-            else
-                BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump"
-            fi
+            # Date provided, use the specified backup file
+            BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump"
         fi
     fi
 
