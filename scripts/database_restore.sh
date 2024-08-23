@@ -61,15 +61,17 @@ find_backup_file() {
  
 restore_normal() {
     log "Starting database restore in normal mode..."
-    BACKUP_FILE=""
-    # Find the backup file
-    if [ -z "$1" ]; then
-        echo "No date provided. Looking for the latest backup file..."
-        BACKUP_FILE= $(find_backup_file)
+
+    BACKUP_FILE=$(find_backup_file "$1" "$2")
+
+    # Check the result
+    if [ -z "$BACKUP_FILE" ]; then
+        echo "No backup file found!"
     else
-        BACKUP_FILE=$(find_backup_file "$1")
+        echo "Backup file to be used: $BACKUP_FILE"
     fi
-    echo "Backup file: $BACKUP_FILE"
+
+
     # Perform the database restore using pg_restore
     su $DATABASE_ADMIN -c "pg_restore -Fc -d $DATABASE $BACKUP_FILE" || handle_error
 
