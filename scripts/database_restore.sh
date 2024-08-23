@@ -58,7 +58,7 @@ find_backup_file() {
  
 restore_normal() {
     log "Starting database restore in normal mode..."
-
+    BACKUP_FILE=""
     # Find the backup file
     if [ -z "$1" ]; then
         echo "No date provided. Looking for the latest backup file..."
@@ -66,7 +66,7 @@ restore_normal() {
     else
         BACKUP_FILE=$(find_backup_file "$1")
     fi
-
+    echo "Backup file: $BACKUP_FILE"
     # Perform the database restore using pg_restore
     su $DATABASE_ADMIN -c "pg_restore -Fc -d $DATABASE $BACKUP_FILE" || handle_error
 
@@ -82,7 +82,7 @@ restore_docker() {
     log "Container $CONTAINER_NAME is not running. Exiting."
     exit 1
     fi
-
+    BACKUP_FILE=""
     # Find the backup file
     if [ -z "$2" ]; then
         echo "No date provided. Looking for the latest backup file..."
@@ -91,7 +91,7 @@ restore_docker() {
         echo "Using backup file for date: $2"
         BACKUP_FILE=$(find_backup_file "docker" "$2")
     fi
-
+    echo "Backup file: $BACKUP_FILE"
     # Copy the backup file from the host machine to the Docker container
     docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
 
