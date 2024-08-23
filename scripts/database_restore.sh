@@ -12,28 +12,13 @@ source /tmp/.env
 # Log file
 LOG_FILE="$OUTPUT_DIRECTORY/backup_log.txt"
 
-BACKUP_FILE=""
+
 
 # if the date is not provided as an argument, then find the latest backup file
 echo "OUTPUT_DIRECTORY: $OUTPUT_DIRECTORY"
 echo "DATABASE: $DATABASE"
 
-if [ -z "$1" ]; then
-    echo "Looking for the latest backup file..."
-    BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
-    if [ -z "$BACKUP_FILE" ]; then
-        echo "No backup file found!"
-    else
-        echo "Found backup file: $BACKUP_FILE"
-    fi
-else
-    BACKUP_FILE=$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump
-    if [ ! -f "$BACKUP_FILE" ]; then
-        echo "Backup file $BACKUP_FILE not found!"
-    else
-        echo "Using specified backup file: $BACKUP_FILE"
-    fi
-fi
+
 
 log() {
   echo "$DATE - $1" >> $LOG_FILE
@@ -46,6 +31,24 @@ handle_error() {
  
 restore_normal() {
     log "Starting database restore in normal mode..."
+
+    BACKUP_FILE=""
+    if [ -z "$1" ]; then
+        echo "Looking for the latest backup file..."
+        BACKUP_FILE=$(ls -t $OUTPUT_DIRECTORY/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+        if [ -z "$BACKUP_FILE" ]; then
+            echo "No backup file found!"
+        else
+            echo "Found backup file: $BACKUP_FILE"
+        fi
+    else
+        BACKUP_FILE=$OUTPUT_DIRECTORY/$DATABASE.$1.pg_dump
+        if [ ! -f "$BACKUP_FILE" ]; then
+            echo "Backup file $BACKUP_FILE not found!"
+        else
+            echo "Using specified backup file: $BACKUP_FILE"
+        fi
+    fi
 
     # Perform the database restore using pg_restore
     su $DATABASE_ADMIN -c "pg_restore -Fc -d $DATABASE $BACKUP_FILE" || handle_error
@@ -62,6 +65,27 @@ restore_docker() {
     log "Container $CONTAINER_NAME is not running. Exiting."
     exit 1
   fi
+  
+  # Find the backup file 
+  BACKUP_FILE=""
+  # if date is not provided as a second argument, then find the latest backup file
+    if [ -z "$2" ]; then
+        echo "Looking for the latest backup file..."
+        BACKUP_FILE=$(docker exec $CONTAINER_NAME ls -t /tmp/$DATABASE.*.pg_dump 2>/dev/null | head -n1)
+        if [ -z "$BACKUP_FILE" ]; then
+        echo "No backup file found!"
+        else
+        echo "Found backup file: $BACKUP_FILE"
+        fi
+    else
+        BACKUP_FILE=/tmp/$DATABASE.$2.pg_dump
+        if ! docker exec $CONTAINER_NAME test -f $BACKUP_FILE; then
+        echo "Backup file $BACKUP_FILE not found!"
+        else
+        echo "Using specified backup file: $BACKUP_FILE"
+        fi
+    fi
+
 
   # Copy the backup file from the host machine to the Docker container
   docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
