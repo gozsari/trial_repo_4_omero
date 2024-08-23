@@ -63,13 +63,6 @@ restore_docker() {
     exit 1
   fi
 
-  # Ensure the backup file exists on the host machine
-  BACKUP_FILE="$OUTPUT_DIRECTORY/$DATABASE.$DATE.pg_dump"
-  if [ ! -f "$BACKUP_FILE" ]; then
-    log "Backup file $BACKUP_FILE does not exist. Exiting."
-    exit 1
-  fi
-
   # Copy the backup file from the host machine to the Docker container
   docker cp $BACKUP_FILE $CONTAINER_NAME:/tmp/ || handle_error
 
