@@ -17,7 +17,12 @@ LOG_FILE="$OUTPUT_DIRECTORY/backup_log.txt"
 # if the date is not provided as an argument, then find the latest backup file
 echo "OUTPUT_DIRECTORY: $OUTPUT_DIRECTORY"
 echo "DATABASE: $DATABASE"
+echo "DATABASE_ADMIN: $DATABASE_ADMIN"
+# Create the backup directory if it doesn't exist
+mkdir -p $OUTPUT_DIRECTORY
 
+# Set the appropriate permissions
+chown -R $DATABASE_ADMIN $OUTPUT_DIRECTORY
 
 
 log() {
