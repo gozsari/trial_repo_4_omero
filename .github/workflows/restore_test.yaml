@@ -60,10 +60,7 @@ jobs:
           cd /tmp
           sudo chmod +x database_restore.sh
           sudo ./database_restore.sh
-        env:
-          OUTPUT_DIRECTORY: ${{ env.OUTPUT_DIRECTORY }}
-          DATABASE: ${{ env.DATABASE }}
-          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
+       
 
       - name: Verify database restore
         run: |
