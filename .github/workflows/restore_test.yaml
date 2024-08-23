@@ -93,10 +93,12 @@ jobs:
           sudo chmod +x database_restore.sh
           sudo ./database_restore.sh docker
 
-      - name: Verify database restore in Docker mode
+      - name: Verify database restore
         run: |
-          docker exec -it $CONTAINER_NAME psql -U $DATABASE_ADMIN -d $DATABASE -c "\l" | grep $DATABASE
+          docker exec $CONTAINER_NAME psql -U $DATABASE_ADMIN -d $DATABASE -c "\l" | grep $DATABASE
         env:
-          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
-          DATABASE: ${{ env.DATABASE }}
-          DATABASE_ADMIN: ${{ env.DATABASE_ADMIN }}
+            OUTPUT_DIRECTORY: /tmp/OMERO/backup/database
+            DATABASE: omero_database
+            DATABASE_ADMIN: postgres
+            CONTAINER_NAME: postgres_container
+        
