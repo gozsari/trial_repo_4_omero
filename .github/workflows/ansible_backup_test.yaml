@@ -3,7 +3,7 @@ name: Test ansible playbook for deploying backup script on VM
 on: 
     push:
         branches:
-        - database-backup-restore
+            - main
 
 jobs:
   test-ansible:
