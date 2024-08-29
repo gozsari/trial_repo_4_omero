@@ -1,6 +1,6 @@
 ---
 - name: Deploy OMERO database script and .env file 
-  hosts: all
+  hosts: localhost
   become: yes
 
   vars:
