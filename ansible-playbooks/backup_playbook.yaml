@@ -1,31 +1,81 @@
 ---
-- name: Backup Database Playbook
-  hosts: dbservers  # Target group (adjust as per your inventory)
-  become: yes  # Ensure we have root privileges
+- name: Deploy OMERO database script and .env file 
+  hosts: all
+  become: yes
+
+  vars:
+    local_scripts_dir: "{{ playbook_dir }}/../scripts"
+
   tasks:
-    - name: Copy database backup script to the server
-      copy:
-        src: files/database_backup.sh
-        dest: /usr/local/bin/database_backup.sh
-        mode: '0755'
-      tags: backup_script
+    - name: Check if the cron package is installed
+      package_facts:
 
-    - name: Execute database backup script
-      command: /usr/local/bin/database_backup.sh
-      register: backup_output
-      ignore_errors: yes  # Continue even if there are errors
-      tags: backup_execute
+    - name: Ensure cron is installed
+      package:
+        name: cron
+        state: present
+      when: "'cron' not in ansible_facts.packages"
 
-    - name: Check if backup was successful
-      debug:
-        msg: "{{ backup_output.stdout }}"
-      when: backup_output.rc == 0
-      tags: backup_check
-
-  handlers:
-    - name: Restart DB Service after backup (if needed)
+    - name: Ensure cron service is running and enabled
       service:
-        name: your_database_service  # Replace with actual service name
-        state: restarted
-      when: backup_output.rc == 0
-      tags: restart_service
+        name: cron
+        state: started
+        enabled: yes
+
+    - name: Check if the database_backup.sh cron job already exists
+      stat:
+        path: /etc/cron.daily/database_backup.sh
+      register: cron_exists
+
+    - name: Notify if the cron job already exists
+      debug:
+        msg: "The database_backup.sh cron job already exists."
+      when: cron_exists.stat.exists
+
+    - name: Copy the backup script to the host
+      copy:
+        src: "{{local_scripts_dir}}/database_backup.sh" 
+        dest: /tmp/database_backup.sh
+        mode: '0755'
+      when: not cron_exists.stat.exists
+
+    - name: Ensure the script is executable
+      file:
+        path: /tmp/database_backup.sh
+        mode: '0755'
+        state: file
+      when: not cron_exists.stat.exists
+
+    - name: Move the script to /etc/cron.daily
+      command: mv /tmp/database_backup.sh /etc/cron.daily/database_backup.sh
+      args:
+        removes: /tmp/database_backup.sh
+      when: not cron_exists.stat.exists
+    
+    - name: Ensure the /etc/omero directory exists
+      file:
+        path: /etc/omero
+        state: directory
+        mode: '0755'
+
+    - name: Copy the .env file to the desired location
+      copy:
+        src: "{{ local_scripts_dir }}/.env" 
+        dest: /etc/omero/.env         
+        mode: '0600'                   
+      when: not cron_exists.stat.exists
+
+    - name: Verify the .env file is in the correct location
+      stat:
+        path: /etc/omero/.env
+      register: env_file
+
+    - name: Display a success message if the .env file was deployed
+      debug:
+        msg: ".env file successfully deployed to /etc/omero/.env"
+      when: env_file.stat.exists
+
+    - name: Display a success message if the script was deployed
+      debug:
+        msg: "Backup script successfully deployed to /etc/cron.daily/omero_backup.sh"
+      when: not cron_exists.stat.exists and env_file.stat.exists

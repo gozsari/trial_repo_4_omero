@@ -1,0 +1,30 @@
+name: Test ansible playbook for deploying backup script on VM
+
+on: 
+    push:
+        branches:
+        - database-backup-restore
+
+jobs:
+  test-ansible:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Ansible
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+
+    - name: Test Ansible Version
+      run: ansible --version
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook -i localhost, -c local ansible-playbooks/backup_playbook.yaml
